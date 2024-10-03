@@ -14,6 +14,8 @@ contract MyDex {
 
     event SoldETH(address indexed user, uint256 ethAmount, uint256 usdtAmount);
     event BoughtETH(address indexed user, uint256 usdtAmount, uint256 ethAmount);
+    event WithdrawUSDT(address indexed to, uint256 amount);
+    event WithdrawETH(address indexed to, uint256 amount);
 
     constructor(address usdtAddress, uint256 _ethToUSDRate, uint256 _usdToETHRate) {
         owner = msg.sender;
@@ -76,16 +78,24 @@ contract MyDex {
         usdToETHRate = _usdToETHRate;
     }
 
+    // // 允许所有者提取合约中的USDT
+    // function withdrawUSDT(uint256 amount) external onlyOwner {
+    //     require(usdt.balanceOf(address(this)) >= amount, "Insufficient USDT in contract");
+    //     usdt.safeTransfer(owner, amount);
+    // }
     // 允许所有者提取合约中的USDT
     function withdrawUSDT(uint256 amount) external onlyOwner {
         require(usdt.balanceOf(address(this)) >= amount, "Insufficient USDT in contract");
         usdt.safeTransfer(owner, amount);
+        emit WithdrawUSDT(owner, amount); // 记录事件
     }
 
     // 允许所有者提取合约中的ETH
     function withdrawETH(uint256 amount) external onlyOwner {
         require(address(this).balance >= amount, "Insufficient ETH in contract");
-        payable(owner).transfer(amount);
+        (bool success, ) = owner.call{value: amount}("");
+        require(success, "Transfer failed"); // 确保转账成功
+        emit WithdrawETH(owner, amount); // 记录事件
     }
 
     // 接收 ETH
