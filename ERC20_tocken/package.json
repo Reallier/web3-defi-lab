@@ -1,0 +1,20 @@
+{
+  "name": "hardhat-project",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-network-helpers": "^1.0.12",
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "@types/expect": "^24.3.0",
+    "@types/mocha": "^10.0.8",
+    "chai": "4",
+    "ethers": "^6.13.2",
+    "hardhat": "^2.22.12",
+    "ts-mocha": "^10.0.0",
+    "typechain": "^8.3.2"
+  },
+  "scripts": {
+    "test": "hardhat test test/ERC20_Tocken.test.ts"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.0.2"
+  }
+}
