@@ -1,121 +1,139 @@
+# MyDex
 
-# MyDex 合约
-MyDex 是一个简单的去中心化交易所 (DEX) 合约，允许用户在 ETH 和 USDT 之间进行兑换操作。合约基于预定义的汇率，并使用 OpenZeppelin 的 SafeERC20 库来安全地处理 USDT 转账。
+一个简单的去中心化交易所 (DEX) 智能合约项目，允许用户在 ETH 和 USDT 之间进行兑换操作。基于 Solidity 开发，使用 Foundry 作为开发工具链。
 
-主要功能：
-## 出售 ETH 兑换 USDT
-用户可以向合约发送 ETH，并根据当前的汇率获得 USDT。合约会检查合约中是否有足够的 USDT 余额，并通过设定最低可接受的 USDT 数量来防止滑点。
+## 项目描述
 
-## 购买 ETH 使用 USDT
-用户可以向合约发送 USDT，并根据汇率获得 ETH。合约确保有足够的 ETH 来满足请求，并支持通过设定最低可接受的 ETH 数量来避免滑点。
+MyDex 是一个简化的 DEX 合约，实现了基本的代币兑换功能。用户可以出售 ETH 购买 USDT，或使用 USDT 购买 ETH。合约支持滑点保护、管理员权限管理和事件日志记录。
 
-## 自定义汇率
-合约的所有者（你）可以随时更新 ETH/USDT 和 USDT/ETH 的汇率，方便根据市场情况调整兑换比例。
+## 功能特性
 
-## 管理员权限
-合约的所有者有权限提取合约中积累的 USDT 或 ETH。这些提取功能受到所有权检查的保护，确保只有合约的所有者才能执行。
+### 核心功能
+- **出售 ETH 兑换 USDT**: 用户发送 ETH，根据当前汇率获得 USDT，支持最小兑换数量设置以防止滑点。
+- **购买 ETH 使用 USDT**: 用户发送 USDT，根据汇率获得 ETH，支持最小兑换数量设置。
+- **汇率管理**: 合约所有者可以更新 ETH/USDT 和 USDT/ETH 的汇率。
+- **管理员提取**: 所有者可以提取合约中的 USDT 或 ETH。
 
-## 安全保障
-合约使用 SafeERC20 来确保代币的安全转移，避免代币卡在合约中的问题。它还通过检查滑点并确保转账前有足够的余额来保证交易的顺利进行。
+### 安全特性
+- 使用 OpenZeppelin 的 SafeERC20 库确保代币安全转移。
+- 滑点保护机制。
+- 所有权检查，确保只有合约所有者能执行敏感操作。
+- 事件日志记录所有交易和提取操作。
 
-## 事件日志记录
-每次交易（无论是买卖还是提取）都会通过事件进行记录，方便在链上进行追踪。
+## 架构
 
-# MyDexTest 测试用例
-MyDexTest 合约使用 Foundry 测试框架来验证 MyDex 智能合约的核心功能。它通过模拟 ETH 和 USDT 的兑换操作，确保合约逻辑的正确性，并且可以通过修改汇率或提取资金来测试管理员权限。为了测试方便，我们使用了 OpenZeppelin 的 ERC20Mock 作为模拟的 USDT 合约。
+### 合约结构
+- `MyDex.sol`: 主合约，包含所有兑换逻辑。
+- `MyDexTest.sol`: 测试合约，使用 Foundry 测试框架验证功能。
 
-主要测试场景：
-testSellETH()
+### 依赖
+- **Solidity**: ^0.8.0
+- **OpenZeppelin Contracts**: 用于 ERC20 接口和 SafeERC20 库。
+- **Forge Std**: Foundry 的测试库。
 
-## 模拟用户出售 ETH 并兑换成 USDT 的场景。
-检查兑换后的用户 USDT 余额是否正确、合约内的 ETH 和 USDT 余额是否与预期匹配。
-testBuyETH()
+## 安装和设置
 
-## 测试用户使用 USDT 购买 ETH 的功能。
-验证用户的 USDT 和 ETH 余额在兑换后的变化，确保合约中 USDT 和 ETH 的余额与计算结果一致。
-testUpdateRates()
+### 前置要求
+- [Foundry](https://book.getfoundry.sh/getting-started/installation.html)
+- Git
 
-## 测试合约所有者更新 ETH/USDT 和 USDT/ETH 汇率的功能。
-确保汇率更新后，合约中的汇率变量与新值一致。
-testWithdrawUSDT()
-
-## 检查合约所有者提取 USDT 的功能。
-验证所有者的 USDT 余额增加是否符合预期。
-testWithdrawETH()
-
-## 测试所有者提取合约中的 ETH。
-记录提取后合约和所有者的 ETH 余额变化，确保提取操作的正确性。
-其他功能：
-setUp() 函数
-每次测试运行前，合约会部署一个新的 MyDex 合约，并初始化 10,000 USDT 和 10 ETH 的流动性，同时为测试用户和所有者设置初始余额。
-
-## 日志记录
-每个测试用例都使用 emit log 和 log_named_uint 来记录测试过程中的关键数据，方便调试和验证。
-
-
-## Foundry
-
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
-
-Foundry consists of:
-
--   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
--   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
--   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
--   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
-
-## Documentation
-
-https://book.getfoundry.sh/
-
-## Usage
-
-### Build
-
-```shell
-$ forge build
+### 克隆项目
+```bash
+git clone <repository-url>
+cd MyDex
 ```
 
-### Test
-
-```shell
-$ forge test
+### 安装依赖
+```bash
+forge install
 ```
 
-### Format
+这将安装 OpenZeppelin 合约和其他依赖。
 
-```shell
-$ forge fmt
+## 使用
+
+### 编译合约
+```bash
+forge build
 ```
 
-### Gas Snapshots
-
-```shell
-$ forge snapshot
+### 运行测试
+```bash
+forge test
 ```
 
-### Anvil
-
-```shell
-$ anvil
+### 格式化代码
+```bash
+forge fmt
 ```
 
-### Deploy
-
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
+### 生成 Gas 快照
+```bash
+forge snapshot
 ```
 
-### Cast
-
-```shell
-$ cast <subcommand>
+### 本地节点
+启动本地 Ethereum 节点：
+```bash
+anvil
 ```
 
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
+### 部署合约
+使用脚本部署到网络：
+```bash
+forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
 ```
+
+注意：部署脚本可能需要根据实际需求修改。
+
+## 测试
+
+项目包含全面的测试套件，覆盖所有主要功能：
+
+- `testSellETH()`: 测试出售 ETH 兑换 USDT。
+- `testBuyETH()`: 测试使用 USDT 购买 ETH。
+- `testUpdateRates()`: 测试汇率更新。
+- `testWithdrawUSDT()`: 测试提取 USDT。
+- `testWithdrawETH()`: 测试提取 ETH。
+
+运行测试：
+```bash
+forge test -v
+```
+
+## 贡献
+
+欢迎贡献！请遵循以下步骤：
+
+1. Fork 项目。
+2. 创建功能分支 (`git checkout -b feature/AmazingFeature`)。
+3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)。
+4. 推送到分支 (`git push origin feature/AmazingFeature`)。
+5. 打开 Pull Request。
+
+## 许可证
+
+本项目基于 MIT 许可证开源。详情请见 [LICENSE](LICENSE) 文件。
+
+## 联系
+
+如有问题或建议，请通过以下方式联系：
+- 邮箱: [your-email@example.com]
+- GitHub Issues: [项目 Issues 页面]
+
+---
+
+## Foundry 工具链
+
+**Foundry** 是一个快速、可移植和模块化的 Ethereum 应用开发工具包，用 Rust 编写。
+
+组成：
+- **Forge**: Ethereum 测试框架（类似 Truffle、Hardhat 和 DappTools）。
+- **Cast**: 与 EVM 智能合约交互的瑞士军刀，用于发送交易和获取链上数据。
+- **Anvil**: 本地 Ethereum 节点，类似于 Ganache、Hardhat Network。
+- **Chisel**: 快速、实用且详细的 Solidity REPL。
+
+文档: https://book.getfoundry.sh/
+
+### 其他命令
+- 帮助: `forge --help`, `anvil --help`, `cast --help`
